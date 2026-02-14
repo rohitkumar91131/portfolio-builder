@@ -38,10 +38,12 @@ const iconMap = {
   School: <School size={24} className="text-white" />,
   Certificate: <Book size={24} className="text-white" />,
   Book: <Book size={24} className="text-white" />,
+  Default: <GraduationCap size={24} className="text-white" />
 };
 
 export default function Education() {
   const containerRef = useRef(null);
+  const lineRef = useRef(null);
   const [educationData, setEducationData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,7 +52,7 @@ export default function Education() {
       try {
         const res = await fetch("/api/education");
         const data = await res.json();
-        
+
         if (data.success) {
           // --- SORTING LOGIC STARTED ---
           const sortedData = data.data.sort((a, b) => {
@@ -60,7 +62,7 @@ export default function Education() {
               const str = yearStr.toLowerCase();
               // If it says "Present", "Current", or "Ongoing", give it a huge number
               if (str.includes("present") || str.includes("current") || str.includes("now")) {
-                return 9999; 
+                return 9999;
               }
               // Otherwise, extract the number (e.g. "2023" -> 2023)
               return parseInt(str.replace(/\D/g, '')) || 0;
@@ -88,29 +90,49 @@ export default function Education() {
   useGSAP(() => {
     if (loading || educationData.length === 0) return;
 
+    // Timeline Line Animation
+    if (lineRef.current) {
+      gsap.fromTo(lineRef.current,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          duration: 1.5,
+          ease: "power3.inOut",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top 70%",
+            end: "bottom 80%",
+            scrub: 1,
+          }
+        }
+      );
+    }
+
     const items = gsap.utils.toArray(".edu-item");
 
-    gsap.fromTo(items, 
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        stagger: 0.3,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse"
+    items.forEach((item) => {
+      gsap.fromTo(item,
+        { x: -50, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "elastic.out(1, 0.75)",
+          scrollTrigger: {
+            trigger: item,
+            start: "top 85%",
+            toggleActions: "play none none reverse"
+          }
         }
-      }
-    );
+      );
+    });
+
   }, { scope: containerRef, dependencies: [loading, educationData] });
 
   return (
     <section ref={containerRef} className="py-20 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-16 text-center edu-item opacity-0">
+        <div className="mb-16 text-center">
           <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Education
           </h2>
@@ -119,8 +141,15 @@ export default function Education() {
           </p>
         </div>
 
-        <div className="relative border-l-4 border-gray-200 dark:border-gray-800 ml-4 md:ml-10 space-y-12">
-          
+        <div className="relative ml-4 md:ml-10 space-y-12">
+          {/* Timeline Line */}
+          {!loading && (
+            <div
+              ref={lineRef}
+              className="absolute left-0 top-0 bottom-0 w-1 bg-gray-200 dark:bg-gray-800 origin-top"
+            ></div>
+          )}
+
           {loading ? (
             <>
               <EducationSkeleton />
@@ -130,11 +159,11 @@ export default function Education() {
           ) : (
             educationData.map((item) => (
               <div key={item._id} className="edu-item relative pl-8 md:pl-12 opacity-0">
-                <div className={`absolute -left-[22px] top-0 flex items-center justify-center w-11 h-11 rounded-full border-4 border-white dark:border-gray-900 shadow-lg ${item.color}`}>
-                  {iconMap[item.iconType] || iconMap.GraduationCap}
+                <div className={`absolute -left-[22px] top-0 flex items-center justify-center w-11 h-11 rounded-full border-4 border-white dark:border-gray-900 shadow-lg ${item.color} z-10`}>
+                  {iconMap[item.iconType] || iconMap.Default}
                 </div>
 
-                <div className="bg-white dark:bg-black p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow">
+                <div className="bg-white dark:bg-black p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow hover:scale-[1.02] duration-300">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-2">
                     <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                       {item.degree}
@@ -144,11 +173,11 @@ export default function Education() {
                       <span>{item.startYear} - {item.endYear}</span>
                     </div>
                   </div>
-                  
+
                   <h4 className="text-blue-600 dark:text-blue-400 font-medium mb-3">
                     {item.institution}
                   </h4>
-                  
+
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
                     {item.description}
                   </p>
