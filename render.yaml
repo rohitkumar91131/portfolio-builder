@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: portfolio-builder
+    env: node
+    buildCommand: npm install --legacy-peer-deps && npm run build
+    startCommand: npm start
+    envVars:
+      - key: IS_RENDER
+        value: true
+      # Add other environment variables here via the dashboard or secret files
