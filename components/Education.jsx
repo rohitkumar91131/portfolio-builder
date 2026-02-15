@@ -41,13 +41,17 @@ const iconMap = {
   Default: <GraduationCap size={24} className="text-white" />
 };
 
-export default function Education() {
+export default function Education({ education }) {
   const containerRef = useRef(null);
   const lineRef = useRef(null);
-  const [educationData, setEducationData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [internalData, setInternalData] = useState([]);
+  const [loading, setLoading] = useState(!education);
+
+  const displayData = education || internalData;
 
   useEffect(() => {
+    if (education) return;
+
     const fetchData = async () => {
       try {
         const res = await fetch("/api/education");
@@ -76,7 +80,7 @@ export default function Education() {
           });
           // --- SORTING LOGIC ENDED ---
 
-          setEducationData(sortedData);
+          setInternalData(sortedData);
         }
       } catch (error) {
         console.error("Error fetching education:", error);
@@ -85,10 +89,10 @@ export default function Education() {
       }
     };
     fetchData();
-  }, []);
+  }, [education]);
 
   useGSAP(() => {
-    if (loading || educationData.length === 0) return;
+    if (loading || displayData.length === 0) return;
 
     // Timeline Line Animation
     if (lineRef.current) {
@@ -127,7 +131,7 @@ export default function Education() {
       );
     });
 
-  }, { scope: containerRef, dependencies: [loading, educationData] });
+  }, { scope: containerRef, dependencies: [loading, displayData] });
 
   return (
     <section ref={containerRef} className="py-20 px-4">
@@ -157,7 +161,7 @@ export default function Education() {
               <EducationSkeleton />
             </>
           ) : (
-            educationData.map((item) => (
+            displayData.map((item) => (
               <div key={item._id} className="edu-item relative pl-8 md:pl-12 opacity-0">
                 <div className={`absolute -left-[22px] top-0 flex items-center justify-center w-11 h-11 rounded-full border-4 border-white dark:border-gray-900 shadow-lg ${item.color} z-10`}>
                   {iconMap[item.iconType] || iconMap.Default}

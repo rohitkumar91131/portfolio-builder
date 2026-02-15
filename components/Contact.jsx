@@ -10,11 +10,13 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const Contact = () => {
+const Contact = ({ user }) => {
   const containerRef = useRef(null);
   const [copied, setCopied] = useState(false);
 
-  const email = "rk34190100@gmail.com";
+  const email = user?.email || "rk34190100@gmail.com";
+  const linkedIn = user?.socialLinks?.linkedin || "https://www.linkedin.com/in/rohit-kumar-114037328/";
+  const github = user?.socialLinks?.github || "https://github.com/rohitkumar91131";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(email);
@@ -90,7 +92,7 @@ const Contact = () => {
           </div>
 
           <a
-            href="https://www.linkedin.com/in/rohit-kumar-114037328/"
+            href={linkedIn}
             target="_blank"
             className="contact-item bg-white dark:bg-black p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm hover:border-blue-600 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col items-center text-center gap-4"
           >
@@ -106,7 +108,7 @@ const Contact = () => {
           </a>
 
           <a
-            href="https://github.com/rohitkumar91131"
+            href={github}
             target="_blank"
             className="contact-item bg-white dark:bg-black p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm hover:border-gray-900 dark:hover:border-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col items-center text-center gap-4"
           >

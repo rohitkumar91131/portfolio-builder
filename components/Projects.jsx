@@ -102,7 +102,7 @@ const ProjectCard = ({ project, index }) => {
       style={{ transformStyle: "preserve-3d" }}
     >
       {/* Make the whole card clickable */}
-      <Link href={`/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-0" aria-label={`View details for ${project.title}`} />
+      <Link href={`/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-0" aria-label={`View details for ${project.title}`} />
 
       {/* Glow Effect */}
       <div
@@ -149,18 +149,22 @@ const ProjectCard = ({ project, index }) => {
   );
 };
 
-export default function Projects() {
+export default function Projects({ projects }) {
   const containerRef = useRef(null);
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [internalProjects, setInternalProjects] = useState([]);
+  const [loading, setLoading] = useState(!projects);
+
+  const displayProjects = projects || internalProjects;
 
   useEffect(() => {
+    if (projects) return;
+
     const fetchProjects = async () => {
       try {
         const res = await fetch("/api/projects");
         const data = await res.json();
         if (data.success) {
-          setProjects(data.data);
+          setInternalProjects(data.data);
         }
       } catch (error) {
         console.error("Failed to fetch projects:", error);
@@ -170,10 +174,10 @@ export default function Projects() {
     };
 
     fetchProjects();
-  }, []);
+  }, [projects]);
 
   useGSAP(() => {
-    if (loading || projects.length === 0) return;
+    if (loading || displayProjects.length === 0) return;
 
     const cards = gsap.utils.toArray(".project-card-wrapper");
 
@@ -199,7 +203,7 @@ export default function Projects() {
       },
       start: "top 85%",
     });
-  }, { scope: containerRef, dependencies: [loading, projects] });
+  }, { scope: containerRef, dependencies: [loading, displayProjects] });
 
   return (
     <section
@@ -226,7 +230,7 @@ export default function Projects() {
               <ProjectSkeleton />
             </>
           ) : (
-            projects.map((project, index) => (
+            displayProjects.map((project, index) => (
               <div key={project._id || index} className="project-card-wrapper h-full">
                 <ProjectCard project={project} index={index} />
               </div>

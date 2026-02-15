@@ -89,7 +89,7 @@ export default function AdminDashboard() {
                                                         <Edit size={18} />
                                                     </Link>
                                                     <a
-                                                        href={`/${project.title}`}
+                                                        href={`/project/${project.title}`}
                                                         target="_blank"
                                                         className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition"
                                                         title="View Live"

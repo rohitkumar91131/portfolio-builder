@@ -3,14 +3,19 @@
 import { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Download, LoaderIcon, ChevronDown } from "lucide-react"; 
+import { Download, LoaderIcon, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 
-const Hero = () => {
+const Hero = ({ user }) => {
   const containerRef = useRef(null);
   const textRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // Default data if no user provided
+  const name = user?.name || "Rohit Kumar";
+  const bio = user?.bio || "I build modern, scalable web apps with React, Next.js, Node.js & WebRTC.";
+  const socialLinks = user?.socialLinks || {};
 
   useGSAP(() => {
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
@@ -23,12 +28,12 @@ const Hero = () => {
       stagger: 0.02,
       duration: 1,
     })
-    .from(".hero-element", {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      stagger: 0.1,
-    }, "-=0.5");
+      .from(".hero-element", {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.1,
+      }, "-=0.5");
 
     // Parallax Effect
     const handleMouseMove = (e) => {
@@ -42,7 +47,7 @@ const Hero = () => {
         duration: 1,
         ease: "power2.out"
       });
-      
+
       gsap.to(".parallax-fg", {
         x: -x * 1.5,
         y: -y * 1.5,
@@ -78,8 +83,8 @@ const Hero = () => {
   };
 
   return (
-    <section 
-      ref={containerRef} 
+    <section
+      ref={containerRef}
       className="relative flex flex-col items-center justify-center h-screen px-4 text-center transition-colors duration-300 overflow-hidden"
     >
       {/* Background Decor */}
@@ -92,34 +97,35 @@ const Hero = () => {
 
       <h1 className="text-5xl md:text-7xl font-bold mb-6 perspective-1000">
         <div className="overflow-hidden">
-          <SplitText className="text-gray-900 dark:text-white">Hi, I’m </SplitText> 
+          <SplitText className="text-gray-900 dark:text-white">Hi, I’m </SplitText>
           <span className="text-blue-600 dark:text-blue-500 inline-block">
-             <SplitText>Rohit Kumar</SplitText>
+            <SplitText>{name}</SplitText>
           </span>
         </div>
       </h1>
 
       <div className="hero-element text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl">
-        I build modern, scalable web apps with <span className="font-semibold text-black dark:text-white">React, Next.js, Node.js & WebRTC</span>.
+        {bio}
       </div>
 
       <div className="hero-element flex flex-wrap justify-center gap-4 relative z-10">
-        <Link 
+        <Link
           href="#projects"
           className="parallax-fg px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-transform hover:scale-105"
         >
           View My Work
         </Link>
-        
-        <Link 
+
+        <Link
           href="#contact"
           className="parallax-fg px-6 py-3 border border-gray-300 text-gray-700 hover:border-black hover:text-black dark:border-gray-500 dark:text-gray-300 dark:hover:border-white dark:hover:text-white rounded-lg font-medium transition-transform hover:scale-105"
         >
           Contact Me
         </Link>
 
-        <a 
-          href="/resume.pdf" 
+        {/* Only show resume button if link is available (or keep current hardcoded for demo) */}
+        <a
+          href="/resume.pdf"
           download="Rohit_Kumar_Resume.pdf"
           onClick={handleDownload}
           className={`parallax-fg flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white rounded-lg font-medium transition-transform hover:scale-105 ${isDownloading ? 'cursor-wait opacity-80' : ''}`}

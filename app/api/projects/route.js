@@ -1,39 +1,50 @@
 import { NextResponse } from "next/server";
-import mongoose from "mongoose";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import connectDB from "@/lib/db";
 import Project from "@/models/Project";
+import User from "@/models/User";
 
-// 1. Connect to DB (Simple utility)
-const MONGODB_URI = process.env.MONGODB_URI;
-
-const connectDB = async () => {
-  if (mongoose.connection.readyState >= 1) return;
-  await mongoose.connect(MONGODB_URI);
-};
-
-// GET: Fetch all projects
-export async function GET() {
+export async function GET(req) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectDB();
-    const projects = await Project.find({}).sort({ createdAt: -1 }); // Newest first
+    const projects = await Project.find({ user: session.user.id }).sort({ createdAt: -1 });
+
     return NextResponse.json({ success: true, data: projects });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
-// POST: Add a new project
 export async function POST(req) {
   try {
-    await connectDB();
-    const body = await req.json();
-    
-    // Validate required fields (optional but good practice)
-    if (!body.title || !body.description) {
-      return NextResponse.json({ success: false, error: "Missing fields" }, { status: 400 });
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    const project = await Project.create(body);
-    return NextResponse.json({ success: true, data: project }, { status: 201 });
+    await connectDB();
+    const body = await req.json();
+
+    // Ensure tech is array
+    if (typeof body.tech === 'string') {
+      body.tech = body.tech.split(',').map(t => t.trim());
+    }
+
+    const project = await Project.create({
+      ...body,
+      user: session.user.id,
+    });
+
+    // Add to User's projects array
+    await User.findByIdAndUpdate(session.user.id, { $push: { projects: project._id } });
+
+    return NextResponse.json({ success: true, data: project });
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
