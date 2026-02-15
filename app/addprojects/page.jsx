@@ -29,7 +29,7 @@ const customStyles = {
   control: (base, state) => ({
     ...base,
     background: "transparent",
-    borderColor: state.isFocused ? "#3b82f6" : "rgba(107, 114, 128, 0.5)", 
+    borderColor: state.isFocused ? "#3b82f6" : "rgba(107, 114, 128, 0.5)",
     borderRadius: "0.75rem",
     padding: "4px",
     boxShadow: state.isFocused ? "0 0 0 2px rgba(59, 130, 246, 0.5)" : "none",
@@ -75,7 +75,7 @@ export default function AddProject() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   // 1. Add mounted state to prevent Hydration Errors
   const [mounted, setMounted] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -138,8 +138,8 @@ export default function AddProject() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black p-4 transition-colors">
-      <form 
-        onSubmit={handleSubmit} 
+      <form
+        onSubmit={handleSubmit}
         className="bg-white dark:bg-gray-900/50 dark:border dark:border-gray-800 p-8 rounded-3xl shadow-xl w-full max-w-2xl space-y-6 backdrop-blur-sm"
       >
         <div className="border-b border-gray-200 dark:border-gray-800 pb-4 mb-6">
@@ -150,9 +150,9 @@ export default function AddProject() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Project Title</label>
-            <input 
+            <input
               name="title"
-              placeholder="e.g. NoUpload" 
+              placeholder="e.g. NoUpload"
               className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               value={formData.title}
               onChange={handleChange}
@@ -162,22 +162,22 @@ export default function AddProject() {
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Card Color (Tailwind)</label>
-            <input 
+            <input
               name="color"
-              placeholder="e.g. bg-blue-50/50 dark:bg-blue-900/20" 
+              placeholder="e.g. bg-blue-50/50 dark:bg-blue-900/20"
               className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               value={formData.color}
               onChange={handleChange}
             />
           </div>
         </div>
-        
+
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
-          <textarea 
+          <textarea
             name="description"
             rows="3"
-            placeholder="Briefly explain what problem this project solves..." 
+            placeholder="Briefly explain what problem this project solves..."
             className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
             value={formData.description}
             onChange={handleChange}
@@ -203,7 +203,7 @@ export default function AddProject() {
 
         <div className="space-y-2">
           <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Icon</label>
-          <select 
+          <select
             name="iconName"
             className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
             value={formData.iconName}
@@ -223,9 +223,9 @@ export default function AddProject() {
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
               <Github size={16} /> GitHub URL
             </label>
-            <input 
+            <input
               name="githubLink"
-              placeholder="https://github.com/username/repo" 
+              placeholder="https://github.com/username/repo"
               className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               value={formData.githubLink}
               onChange={handleChange}
@@ -236,9 +236,9 @@ export default function AddProject() {
             <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
               <LinkIcon size={16} /> Live Demo URL
             </label>
-            <input 
+            <input
               name="liveLink"
-              placeholder="https://myproject.com" 
+              placeholder="https://myproject.com"
               className="w-full p-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
               value={formData.liveLink}
               onChange={handleChange}
@@ -246,8 +246,8 @@ export default function AddProject() {
           </div>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isSubmitting}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-blue-500/30 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
         >
