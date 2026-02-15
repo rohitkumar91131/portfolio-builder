@@ -7,6 +7,8 @@ import Experience from "@/models/Experience";
 import ClassicPortfolio from "@/components/templates/original/ClassicPortfolio";
 import ModernPortfolio from "@/components/templates/modern/ModernPortfolio";
 import BentoPortfolio from "@/components/templates/bento/BentoPortfolio";
+import MinimalPortfolio from "@/components/templates/minimal/MinimalPortfolio";
+
 
 
 
@@ -58,6 +60,8 @@ export default async function PublicPortfolio({ params }) {
             return <ModernPortfolio user={user} />;
         case "bento":
             return <BentoPortfolio user={user} />;
+        case "minimal":
+            return <MinimalPortfolio user={user} />;
         case "classic":
         default:
             return <ClassicPortfolio user={user} />;

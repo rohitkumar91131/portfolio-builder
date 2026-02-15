@@ -30,11 +30,10 @@ const templates = [
     },
     {
         id: "minimal",
-        name: "Minimal (Coming Soon)",
+        name: "Minimal",
         description: "Clean, whitespace-heavy design that puts content first.",
         image: "/placeholder-minimal.png",
-        color: "bg-gray-400",
-        disabled: true
+        color: "bg-gray-400"
     }
 ];
 
