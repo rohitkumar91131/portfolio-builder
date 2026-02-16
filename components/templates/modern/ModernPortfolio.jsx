@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Github, Linkedin, Twitter, Globe, Mail, ExternalLink, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Twitter, Globe, Mail, ExternalLink, ArrowUpRight, Instagram } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -40,15 +40,11 @@ export default function ModernPortfolio({ user }) {
     }, { scope: containerRef });
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 flex flex-col lg:flex-row">
-
-            {/* Left Panel - Fixed on Desktop */}
-            <div
-                ref={leftPanelRef}
-                className="w-full lg:w-5/12 lg:h-screen lg:fixed lg:top-0 lg:left-0 bg-white dark:bg-black border-r border-neutral-200 dark:border-neutral-800 p-8 lg:p-16 flex flex-col justify-between z-10"
-            >
-                <div className="left-content space-y-8">
-                    <div className="relative w-32 h-32 lg:w-48 lg:h-48 rounded-full overflow-hidden border-4 border-neutral-100 dark:border-neutral-800 shadow-xl">
+        <div ref={containerRef} className="flex h-screen bg-white dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 overflow-hidden font-sans">
+            {/* Sidebar / Left Panel */}
+            <aside className="w-full md:w-1/3 lg:w-1/4 h-full p-8 md:p-12 border-r border-neutral-200 dark:border-neutral-800 flex flex-col justify-between relative bg-white dark:bg-neutral-950 z-10">
+                <div className="left-content">
+                    <div className="relative w-32 h-32 rounded-full overflow-hidden mb-8 border-4 border-neutral-100 dark:border-neutral-800">
                         <Image
                             src={user.image || "https://github.com/shadcn.png"}
                             alt={name}
@@ -56,49 +52,53 @@ export default function ModernPortfolio({ user }) {
                             className="object-cover"
                         />
                     </div>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tighter mb-4">
+                        {name}
+                    </h1>
+                    <p className="text-xl lg:text-2xl text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
+                        {bio}
+                    </p>
+                </div>
 
-                    <div className="space-y-4">
-                        <h1 className="text-4xl lg:text-6xl font-bold tracking-tighter leading-tight">
-                            {name}
-                        </h1>
-                        <p className="text-xl lg:text-2xl text-neutral-500 dark:text-neutral-400 font-light leading-relaxed">
-                            {bio}
-                        </p>
-                    </div>
-
-                    <div className="flex gap-4">
-                        {socialLinks?.github && (
-                            <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
-                                <Github size={24} />
-                            </a>
-                        )}
-                        {socialLinks?.linkedin && (
-                            <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-blue-600 hover:text-white transition-all">
-                                <Linkedin size={24} />
-                            </a>
-                        )}
-                        {socialLinks?.twitter && (
-                            <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-sky-500 hover:text-white transition-all">
-                                <Twitter size={24} />
-                            </a>
-                        )}
-                        <a href={`mailto:${user.email}`} className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-red-500 hover:text-white transition-all">
-                            <Mail size={24} />
+                <div className="left-content flex flex-wrap gap-4">
+                    {socialLinks?.github && (
+                        <a href={socialLinks.github} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all">
+                            <Github size={24} />
                         </a>
-                    </div>
+                    )}
+                    {socialLinks?.linkedin && (
+                        <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-blue-600 hover:text-white transition-all">
+                            <Linkedin size={24} />
+                        </a>
+                    )}
+                    {socialLinks?.twitter && (
+                        <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-sky-500 hover:text-white transition-all">
+                            <Twitter size={24} />
+                        </a>
+                    )}
+                    {socialLinks?.instagram && (
+                        <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-pink-600 hover:text-white transition-all">
+                            <Instagram size={24} />
+                        </a>
+                    )}
+                    {socialLinks?.website && (
+                        <a href={socialLinks.website} target="_blank" rel="noopener noreferrer" className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-emerald-600 hover:text-white transition-all">
+                            <Globe size={24} />
+                        </a>
+                    )}
+                    <a href={`mailto:${user.email}`} className="p-3 bg-neutral-100 dark:bg-neutral-900 rounded-full hover:bg-red-500 hover:text-white transition-all">
+                        <Mail size={24} />
+                    </a>
                 </div>
 
                 <div className="left-content hidden lg:block text-sm text-neutral-400">
                     &copy; {new Date().getFullYear()} {name}. All rights reserved.
                 </div>
-            </div>
+            </aside >
 
             {/* Right Panel - Scrollable */}
-            <div
-                ref={rightPanelRef}
-                className="w-full lg:w-7/12 lg:ml-auto p-8 lg:p-16 min-h-screen"
-            >
-                <div className="right-content space-y-24 max-w-3xl mx-auto pt-8">
+            <div ref={rightPanelRef} className="w-full md:w-2/3 lg:w-3/4 h-full overflow-y-auto no-scrollbar scroll-smooth">
+                <div className="right-content space-y-24 max-w-3xl mx-auto pt-8 pb-32 px-6">
 
                     {/* Experience Section */}
                     <section id="experience" className="space-y-8">
@@ -131,43 +131,46 @@ export default function ModernPortfolio({ user }) {
                             {projects?.map((project) => (
                                 <div key={project._id} className="group relative border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden bg-white dark:bg-neutral-900 hover:shadow-2xl hover:shadow-neutral-200 dark:hover:shadow-neutral-900 transition-all duration-300">
 
-                                    <div className="p-8 space-y-4">
-                                        <div className="flex justify-between items-start">
-                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${project.color || 'bg-blue-100 dark:bg-blue-900/30'}`}>
-                                                {/* You can map iconName to actual icons if needed */}
-                                                <ArrowUpRight className="text-current" />
+                                    <Link href={`/${user.username}/modern/project/${encodeURIComponent(project.title)}`} className="block" aria-label={`View details for ${project.title}`}>
+                                        <div className="p-8 space-y-4">
+                                            <div className="flex justify-between items-start">
+                                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${project.color || 'bg-blue-100 dark:bg-blue-900/30'}`}>
+                                                    <ArrowUpRight className="text-current" />
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    {project.githubLink && (
+                                                        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.githubLink, '_blank'); }} className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer z-10 relative">
+                                                            <Github size={18} />
+                                                        </div>
+                                                    )}
+                                                    {project.liveLink && (
+                                                        <div onClick={(e) => { e.preventDefault(); e.stopPropagation(); window.open(project.liveLink, '_blank'); }} className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors cursor-pointer z-10 relative">
+                                                            <ExternalLink size={18} />
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="flex gap-2">
-                                                {project.githubLink && (
-                                                    <a href={project.githubLink} target="_blank" className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors">
-                                                        <Github size={18} />
-                                                    </a>
-                                                )}
-                                                {project.liveLink && (
-                                                    <a href={project.liveLink} target="_blank" className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-full transition-colors">
-                                                        <ExternalLink size={18} />
-                                                    </a>
-                                                )}
+
+                                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                                <ArrowUpRight size={20} />
                                             </div>
                                         </div>
-
-                                        <h3 className="text-2xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        <h3 className="text-2xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors px-8">
                                             {project.title}
                                         </h3>
 
-                                        <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                                        <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed px-8 pb-4">
                                             {project.description}
                                         </p>
 
-                                        <div className="flex flex-wrap gap-2 pt-4">
+                                        <div className="flex flex-wrap gap-2 px-8 pb-8">
                                             {project.tech.map((t, i) => (
                                                 <span key={i} className="px-3 py-1 text-xs font-medium rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
                                                     {t}
                                                 </span>
                                             ))}
                                         </div>
-                                    </div>
-                                    <Link href={`/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-10 opacity-0" aria-label={`View details for ${project.title}`} />
+                                    </Link>
                                 </div>
                             ))}
                         </div>

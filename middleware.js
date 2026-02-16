@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-export function middleware(request) {
+export async function middleware(request) {
     const path = request.nextUrl.pathname;
 
     // Protect Admin Dashboard and Edit Routes
@@ -12,9 +13,25 @@ export function middleware(request) {
         }
     }
 
+    // Protect User Dashboard Routes
+    if (path.startsWith('/dashboard')) {
+        const token = await getToken({
+            req: request,
+            secret: process.env.NEXTAUTH_SECRET
+        });
+
+        if (!token) {
+            return NextResponse.redirect(new URL('/auth/signin', request.url));
+        }
+    }
+
     return NextResponse.next();
 }
 
 export const config = {
-    matcher: ['/admin/dashboard/:path*', '/admin/edit/:path*'],
+    matcher: [
+        '/admin/dashboard/:path*',
+        '/admin/edit/:path*',
+        '/dashboard/:path*'
+    ],
 };

@@ -18,13 +18,13 @@ export default function DashboardLayout({ children }) {
         }
     }, [status, router]);
 
-    if (status === "loading") {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black">
-                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-            </div>
-        );
-    }
+    // if (status === "loading") {
+    //     return (
+    //         <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black">
+    //             <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+    //         </div>
+    //     );
+    // }
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-black">
@@ -41,7 +41,7 @@ export default function DashboardLayout({ children }) {
                 </button>
             </div>
 
-            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} user={session?.user} />
+            <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} user={session?.user} isLoading={status === "loading"} />
 
             <main className="lg:pl-64 pt-20 min-h-screen transition-all duration-300">
                 <div className="container mx-auto px-4 lg:px-8 py-8">

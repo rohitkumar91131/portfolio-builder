@@ -50,7 +50,7 @@ const iconMap = {
   Default: <Code size={32} className="text-gray-500" />
 };
 
-const ProjectCard = ({ project, index }) => {
+const ProjectCard = ({ project, index, username }) => {
   const cardRef = useRef(null);
   const glowRef = useRef(null);
 
@@ -101,8 +101,8 @@ const ProjectCard = ({ project, index }) => {
       className={`project-card h-full flex flex-col group relative p-8 rounded-3xl border border-gray-200 dark:border-gray-800 hover:border-blue-500/50 transition-colors duration-300 ${project.color || 'bg-gray-50 dark:bg-gray-900'} overflow-hidden`}
       style={{ transformStyle: "preserve-3d" }}
     >
-      {/* Make the whole card clickable */}
-      <Link href={`/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-0" aria-label={`View details for ${project.title}`} />
+      {/* Make the whole card clickable - defaulting to classic for this component */}
+      <Link href={`/${username}/classic/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-0" aria-label={`View details for ${project.title}`} />
 
       {/* Glow Effect */}
       <div
@@ -138,18 +138,22 @@ const ProjectCard = ({ project, index }) => {
       <div className="absolute top-6 right-6 z-20 flex gap-2 opacity-100 translate-x-0 md:opacity-0 md:translate-x-4 md:group-hover:opacity-100 md:group-hover:translate-x-0 transition-all duration-300"
         style={{ transform: "translateZ(30px)" }} // Float icons higher
       >
-        <a href={project.githubLink} target="_blank" className="p-2 bg-white dark:bg-black rounded-full hover:scale-110 transition-transform shadow-md border border-gray-100 dark:border-gray-800 pointer-events-auto">
-          <Github size={18} className="text-gray-900 dark:text-white" />
-        </a>
-        <a href={project.liveLink} target="_blank" className="p-2 bg-white dark:bg-black rounded-full hover:scale-110 transition-transform shadow-md border border-gray-100 dark:border-gray-800 pointer-events-auto">
-          <ExternalLink size={18} className="text-gray-900 dark:text-white" />
-        </a>
+        {project.githubLink && (
+          <a href={project.githubLink} target="_blank" onClick={(e) => e.stopPropagation()} className="p-2 bg-white dark:bg-black rounded-full hover:scale-110 transition-transform shadow-md border border-gray-100 dark:border-gray-800 pointer-events-auto">
+            <Github size={18} className="text-gray-900 dark:text-white" />
+          </a>
+        )}
+        {project.liveLink && (
+          <a href={project.liveLink} target="_blank" onClick={(e) => e.stopPropagation()} className="p-2 bg-white dark:bg-black rounded-full hover:scale-110 transition-transform shadow-md border border-gray-100 dark:border-gray-800 pointer-events-auto">
+            <ExternalLink size={18} className="text-gray-900 dark:text-white" />
+          </a>
+        )}
       </div>
     </div>
   );
 };
 
-export default function Projects({ projects }) {
+export default function Projects({ projects, username }) { // Accept username prop
   const containerRef = useRef(null);
   const [internalProjects, setInternalProjects] = useState([]);
   const [loading, setLoading] = useState(!projects);

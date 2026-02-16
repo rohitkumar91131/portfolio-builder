@@ -11,29 +11,61 @@ const templates = [
         id: "classic",
         name: "Classic",
         description: "A timeless, professional layout suitable for any industry.",
-        image: "/placeholder-classic.png", // We'll need real images eventually
         color: "bg-blue-600"
     },
     {
         id: "modern",
         name: "Modern",
         description: "Split-screen design with bold typography and dark mode focus.",
-        image: "/placeholder-modern.png",
         color: "bg-purple-600"
     },
     {
         id: "bento",
         name: "Bento Grid",
         description: "Trendy, grid-based layout inspired by modern tech UI.",
-        image: "/placeholder-bento.png",
         color: "bg-indigo-600"
     },
     {
         id: "minimal",
         name: "Minimal",
         description: "Clean, whitespace-heavy design that puts content first.",
-        image: "/placeholder-minimal.png",
         color: "bg-gray-400"
+    },
+    {
+        id: "retro",
+        name: "Retro Terminal",
+        description: "A hacker-style terminal interface for developers.",
+        color: "bg-green-600"
+    },
+    {
+        id: "chaos",
+        name: "Creative Chaos",
+        description: "Brutalist, high-energy layout with draggable elements.",
+        color: "bg-yellow-500"
+    },
+    {
+        id: "corporate",
+        name: "Corporate",
+        description: "Polished, business-first design for consultants and agencies.",
+        color: "bg-slate-700"
+    },
+    {
+        id: "horizontal",
+        name: "Horizontal Scroll",
+        description: "Unique horizontal navigation for a cinematic experience.",
+        color: "bg-orange-600"
+    },
+    {
+        id: "magazine",
+        name: "Magazine",
+        description: "Editorial style layout with large typography and grid systems.",
+        color: "bg-red-700"
+    },
+    {
+        id: "parallax",
+        name: "Parallax",
+        description: "Immersive 3D scrolling effects for visual storytelling.",
+        color: "bg-emerald-600"
     }
 ];
 
@@ -84,19 +116,24 @@ export default function TemplatesPage() {
                 {templates.map((template) => (
                     <div
                         key={template.id}
-                        onClick={() => !template.disabled && setSelectedTemplate(template.id)}
-                        className={`relative group cursor-pointer border-2 rounded-2xl overflow-hidden transition-all duration-300 ${template.disabled ? 'opacity-50 cursor-not-allowed grayscale' : ''} ${selectedTemplate === template.id
+                        className={`relative group border-2 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col ${selectedTemplate === template.id
                             ? "border-blue-600 ring-4 ring-blue-600/10 scale-[1.02]"
                             : "border-gray-200 dark:border-gray-800 hover:border-blue-400 dark:hover:border-blue-500/50"
                             }`}
                     >
                         {/* Preview Image Placeholder */}
-                        <div className={`h-48 ${template.color} flex items-center justify-center text-white/20`}>
+                        <div
+                            onClick={() => setSelectedTemplate(template.id)}
+                            className={`h-48 ${template.color} flex items-center justify-center text-white/20 cursor-pointer`}
+                        >
                             <LayoutTemplate size={64} />
                         </div>
 
-                        <div className="p-6 bg-white dark:bg-gray-900">
-                            <div className="flex justify-between items-center mb-2">
+                        <div className="p-6 bg-white dark:bg-gray-900 flex flex-col flex-grow">
+                            <div
+                                onClick={() => setSelectedTemplate(template.id)}
+                                className="flex justify-between items-center mb-2 cursor-pointer"
+                            >
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">{template.name}</h3>
                                 {selectedTemplate === template.id && (
                                     <div className="bg-blue-600 text-white p-1 rounded-full">
@@ -104,7 +141,15 @@ export default function TemplatesPage() {
                                     </div>
                                 )}
                             </div>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">{template.description}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 flex-grow">{template.description}</p>
+
+                            <a
+                                href={`/${session?.user?.username}/${template.id}`}
+                                target="_blank"
+                                className="w-full text-center px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
+                            >
+                                View Preview
+                            </a>
                         </div>
                     </div>
                 ))}

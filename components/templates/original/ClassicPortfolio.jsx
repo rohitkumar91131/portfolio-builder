@@ -10,7 +10,7 @@ export default function ClassicPortfolio({ user }) {
     return (
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100">
             <Hero user={user} />
-            <Projects projects={user.projects} />
+            <Projects projects={user.projects} username={user.username} />
             <ExperienceComponent experience={user.experience} />
             <EducationComponent education={user.education} />
             <Contact user={user} />

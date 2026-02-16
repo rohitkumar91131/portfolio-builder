@@ -55,13 +55,15 @@ export default function MinimalPortfolio({ user }) {
                     <span className="animate-pulse">_</span>
                 </h1>
                 <p className="text-sm md:text-base max-w-2xl leading-relaxed opacity-80">
-          // {bio}
+                    {/* // {bio} */}
                 </p>
 
                 <nav className="flex gap-6 mt-8 text-sm uppercase tracking-wide">
                     {socialLinks?.github && <a href={socialLinks.github} target="_blank" className="hover:underline Decoration-2 underline-offset-4">[ Github ]</a>}
                     {socialLinks?.linkedin && <a href={socialLinks.linkedin} target="_blank" className="hover:underline Decoration-2 underline-offset-4">[ LinkedIn ]</a>}
                     {socialLinks?.twitter && <a href={socialLinks.twitter} target="_blank" className="hover:underline Decoration-2 underline-offset-4">[ Twitter ]</a>}
+                    {socialLinks?.instagram && <a href={socialLinks.instagram} target="_blank" className="hover:underline Decoration-2 underline-offset-4">[ Instagram ]</a>}
+                    {socialLinks?.website && <a href={socialLinks.website} target="_blank" className="hover:underline Decoration-2 underline-offset-4">[ Website ]</a>}
                     <a href={`mailto:${user.email}`} className="hover:underline Decoration-2 underline-offset-4">[ Email ]</a>
                 </nav>
             </header>
@@ -115,14 +117,26 @@ export default function MinimalPortfolio({ user }) {
                                     <p className="text-sm mb-6 leading-relaxed opacity-80 group-hover:opacity-100">
                                         {project.description}
                                     </p>
-                                    <div className="flex flex-wrap gap-2">
+                                    <div className="flex flex-wrap gap-2 mb-6">
                                         {project.tech.map((t) => (
                                             <span key={t} className="text-xs border border-current px-2 py-1 rounded-full">
                                                 {t}
                                             </span>
                                         ))}
                                     </div>
-                                    <Link href={`/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-10" />
+                                    <div className="flex gap-4 relative z-20">
+                                        {project.githubLink && (
+                                            <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs font-bold hover:underline">
+                                                [ SOURCE ]
+                                            </a>
+                                        )}
+                                        {project.liveLink && (
+                                            <a href={project.liveLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-xs font-bold hover:underline">
+                                                [ LIVE ]
+                                            </a>
+                                        )}
+                                    </div>
+                                    <Link href={`/${user.username}/minimal/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-10" />
                                 </div>
                             ))}
                         </div>

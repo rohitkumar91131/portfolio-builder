@@ -22,7 +22,7 @@ const navItems = [
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
 ];
 
-export default function Sidebar({ isOpen, onClose, user }) {
+export default function Sidebar({ isOpen, onClose, user, isLoading }) {
     const pathname = usePathname();
 
     return (
@@ -51,7 +51,11 @@ export default function Sidebar({ isOpen, onClose, user }) {
                         </button>
                     </div>
 
-                    {user?.email && (
+                    {isLoading ? (
+                        <div className="mb-6 px-4 animate-pulse">
+                            <div className="h-12 w-full bg-gray-200 dark:bg-gray-800 rounded-xl shadow-sm"></div>
+                        </div>
+                    ) : user?.email ? (
                         <div className="mb-6 px-4">
                             <Link
                                 href={`/${user.username || user.email?.split('@')[0]}`}
@@ -64,7 +68,7 @@ export default function Sidebar({ isOpen, onClose, user }) {
                                 </svg>
                             </Link>
                         </div>
-                    )}
+                    ) : null}
 
                     {navItems.map((item) => {
                         const isActive = pathname === item.href;

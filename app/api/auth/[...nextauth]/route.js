@@ -11,7 +11,9 @@ export const authOptions = {
     providers: [
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
+            clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
         }),
         GitHubProvider({
             clientId: process.env.GITHUB_ID,
@@ -29,12 +31,16 @@ export const authOptions = {
                 try {
                     await connectDB();
                     const dbUser = await User.findOne({ email: session.user.email });
+                    console.log("DEBUG: Session Fetch - dbUser image:", dbUser?.image);
                     if (dbUser) {
                         session.user.username = dbUser.username;
                         session.user.template = dbUser.template;
                         session.user.bio = dbUser.bio;
                         session.user.website = dbUser.website; // Make sure User model has website in root or socialLinks
                         session.user.socialLinks = dbUser.socialLinks || {};
+                        if (dbUser.image) session.user.image = dbUser.image; // Override Google image with DB image
+                        session.user.backgroundImage = dbUser.backgroundImage;
+                        session.user.blurDataURL = dbUser.blurDataURL;
                     }
                 } catch (error) {
                     console.error("Error fetching user data for session", error);

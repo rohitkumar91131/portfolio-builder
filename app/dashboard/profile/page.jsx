@@ -5,38 +5,111 @@ import { useState, useEffect } from "react";
 import { Loader2, Save } from "lucide-react";
 import { ProfileSkeleton } from "@/components/dashboard/Skeletons";
 import { toast } from "sonner";
+import ImageUpload from "@/components/ImageUpload"; // Import
+import { useRouter } from "next/navigation"; // Added for router.refresh()
 
 export default function ProfilePage() {
     const { data: session, update } = useSession();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true); // Start as loading to avoid flash
+    const router = useRouter(); // Initialize useRouter
+
     const [formData, setFormData] = useState({
         name: "",
+        username: "",
+        email: "",
         bio: "",
-        website: "",
-        github: "",
-        linkedin: "",
-        twitter: "",
+        image: "", // Profile Image
+        backgroundImage: "", // New Background Image
+        blurDataURL: "", // New Blur Data URL
+        backgroundBlurDataURL: "", // New Background Blur Data URL
+        socialLinks: {
+            github: "",
+            linkedin: "",
+            twitter: "",
+            website: "",
+            instagram: ""
+        }
     });
+
+    // Generate a tiny blur data URL from the uploaded image
+    const generateBlurDataURL = async (imageUrl) => {
+        try {
+            // Helper to get a tiny version from Cloudinary if possible, or just use the generic one
+            // Cloudinary trick: transform to w_10, blur
+            // NOTE: This assumes Cloudinary URL structure. If raw file, this might fail, but ImageUpload gives Cloudinary URL.
+            if (!imageUrl.includes("cloudinary")) return "";
+
+            const blurUrl = imageUrl.replace("/upload/", "/upload/w_10,e_blur:1000,q_1/");
+            const response = await fetch(blurUrl);
+            const blob = await response.blob();
+
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.readAsDataURL(blob);
+            });
+        } catch (e) {
+            console.error("Failed to gen blur url", e);
+            return "";
+        }
+    };
+
+    const handleProfileImageChange = async (url) => {
+        setFormData(prev => ({ ...prev, image: url }));
+        if (url) {
+            const dataUrl = await generateBlurDataURL(url);
+            setFormData(prev => ({ ...prev, blurDataURL: dataUrl }));
+        }
+    };
+
+    const handleBackgroundImageChange = async (url) => {
+        setFormData(prev => ({ ...prev, backgroundImage: url }));
+        if (url) {
+            const dataUrl = await generateBlurDataURL(url);
+            setFormData(prev => ({ ...prev, backgroundBlurDataURL: dataUrl }));
+        }
+    };
 
     // Load initial data
     useEffect(() => {
-        if (session === undefined) return; // Wait for session to load
+        const fetchProfile = async () => {
+            try {
+                setLoading(true);
+                const res = await fetch("/api/user/profile");
+                const data = await res.json();
+
+                if (data.success && data.user) {
+                    const dbUser = data.user;
+                    setFormData({
+                        name: dbUser.name || "",
+                        username: dbUser.username || "",
+                        email: dbUser.email || "",
+                        bio: dbUser.bio || "",
+                        image: dbUser.image || "",
+                        backgroundImage: dbUser.backgroundImage || "",
+                        blurDataURL: dbUser.blurDataURL || "",
+                        backgroundBlurDataURL: dbUser.backgroundBlurDataURL || "",
+                        socialLinks: {
+                            github: dbUser.socialLinks?.github || "",
+                            linkedin: dbUser.socialLinks?.linkedin || "",
+                            twitter: dbUser.socialLinks?.twitter || "",
+                            website: dbUser.socialLinks?.website || "",
+                            instagram: dbUser.socialLinks?.instagram || ""
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to fetch profile", e);
+                toast.error("Failed to load profile data");
+            } finally {
+                setLoading(false);
+            }
+        };
 
         if (session?.user) {
-            setFormData({
-                name: session.user.name || "",
-                bio: session.user.bio || "",
-                website: session.user.website || "",
-                github: session.user.socialLinks?.github || "",
-                linkedin: session.user.socialLinks?.linkedin || "",
-                twitter: session.user.socialLinks?.twitter || "",
-            });
+            fetchProfile();
         }
     }, [session]);
-
-    if (session?.status === "loading" || !session) {
-        return <ProfileSkeleton />;
-    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -46,6 +119,7 @@ export default function ProfilePage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        console.log("DEBUG: Submitting Profile Form Data:", formData);
 
         try {
             const res = await fetch("/api/user/profile", {
@@ -58,23 +132,32 @@ export default function ProfilePage() {
 
             await update({
                 name: formData.name,
+                image: formData.image,
                 bio: formData.bio,
-                website: formData.website,
+                website: formData.socialLinks.website,
                 socialLinks: {
-                    github: formData.github,
-                    linkedin: formData.linkedin,
-                    twitter: formData.twitter
-                }
+                    github: formData.socialLinks.github,
+                    linkedin: formData.socialLinks.linkedin,
+                    twitter: formData.socialLinks.twitter,
+                    instagram: formData.socialLinks.instagram
+                },
+                backgroundImage: formData.backgroundImage,
+                blurDataURL: formData.blurDataURL,
             });
 
             toast.success("Profile updated successfully!");
+            router.refresh();
         } catch (error) {
-            console.error(error);
             toast.error("Failed to update profile");
+            console.error(error);
         } finally {
             setLoading(false);
         }
     };
+
+    if (!session || (loading && !formData.email)) {
+        return <ProfileSkeleton />;
+    }
 
     return (
         <div className="max-w-2xl mx-auto">
@@ -114,8 +197,34 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Social Links */}
+                {/* Profile and Background Images */}
                 <div className="space-y-4 pt-4">
+                    <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-800 pb-2">Images</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Profile Image</label>
+                            <ImageUpload
+                                value={formData.image}
+                                onChange={handleProfileImageChange}
+                                blurDataURL={formData.blurDataURL}
+                                label="Upload Profile Pic"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Background/Hero Image</label>
+                            <ImageUpload
+                                value={formData.backgroundImage}
+                                onChange={handleBackgroundImageChange}
+                                blurDataURL={formData.backgroundBlurDataURL}
+                                label="Upload Background"
+                            />
+                        </div>
+                    </div>
+                </div >
+
+                {/* Social Links */}
+                < div className="space-y-4 pt-4" >
                     <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-800 pb-2">Social Links</h2>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -142,7 +251,7 @@ export default function ProfilePage() {
                             />
                         </div>
                     </div>
-                </div>
+                </div >
 
                 <div className="pt-4 flex justify-end">
                     <button
@@ -155,7 +264,7 @@ export default function ProfilePage() {
                     </button>
                 </div>
 
-            </form>
-        </div>
+            </form >
+        </div >
     );
 }

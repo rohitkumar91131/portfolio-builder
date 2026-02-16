@@ -18,6 +18,15 @@ const UserSchema = new mongoose.Schema({
     image: {
         type: String,
     },
+    backgroundImage: {
+        type: String,
+    },
+    blurDataURL: {
+        type: String, // For Profile Image
+    },
+    backgroundBlurDataURL: {
+        type: String, // For Background Image
+    },
     // Custom Fields for Portfolio Platform
     bio: {
         type: String,

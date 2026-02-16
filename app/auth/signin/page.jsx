@@ -39,6 +39,41 @@ export default function SignIn() {
                 </div>
 
                 <div className="space-y-4">
+                    {/* Error Handling */}
+                    {typeof window !== "undefined" && new URLSearchParams(window.location.search).get("error") === "OAuthAccountNotLinked" && (
+                        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-sm text-red-600 dark:text-red-400 mb-4">
+                            <p className="font-semibold mb-2">Account Linking Error</p>
+                            <p className="mb-4">
+                                This email is already associated with another account (likely created via seed data or email/password).
+                                For security, NextAuth prevents automatic merging.
+                            </p>
+                            <div className="space-y-2">
+                                <p className="font-medium text-xs uppercase tracking-wider opacity-70">Development Fix:</p>
+                                <button
+                                    onClick={async () => {
+                                        const email = prompt("Enter your email to reset the conflicting account:");
+                                        if (!email) return;
+                                        try {
+                                            const res = await fetch(`/api/auth/reset?email=${email}`);
+                                            const data = await res.json();
+                                            if (res.ok) {
+                                                alert(data.message);
+                                                window.location.href = "/auth/signin";
+                                            } else {
+                                                alert(data.error || "Failed to reset");
+                                            }
+                                        } catch (e) {
+                                            alert("Error resetting account");
+                                        }
+                                    }}
+                                    className="w-full px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition-colors"
+                                >
+                                    Reset/Delete Conflicting Account
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
                     <button
                         onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
                         className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-750 transition-all hover:scale-[1.02]"

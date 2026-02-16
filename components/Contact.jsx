@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Linkedin, Github, Mail, Copy, Check, ArrowUpRight } from "lucide-react";
+import { Linkedin, Github, Mail, Copy, Check, ArrowUpRight, Twitter, Instagram, Globe } from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -15,8 +15,60 @@ const Contact = ({ user }) => {
   const [copied, setCopied] = useState(false);
 
   const email = user?.email || "rk34190100@gmail.com";
-  const linkedIn = user?.socialLinks?.linkedin || "https://www.linkedin.com/in/rohit-kumar-114037328/";
-  const github = user?.socialLinks?.github || "https://github.com/rohitkumar91131";
+
+  // Configuration for social links
+  const socialConfig = {
+    linkedin: {
+      icon: Linkedin,
+      label: "LinkedIn",
+      subLabel: "Let's connect professionally",
+      colorClass: "text-blue-700 dark:text-blue-400",
+      bgClass: "bg-blue-50 dark:bg-blue-900/20"
+    },
+    github: {
+      icon: Github,
+      label: "GitHub",
+      subLabel: "Check out my code",
+      colorClass: "text-gray-900 dark:text-white",
+      bgClass: "bg-gray-100 dark:bg-gray-800"
+    },
+    twitter: {
+      icon: Twitter,
+      label: "Twitter",
+      subLabel: "Follow my updates",
+      colorClass: "text-sky-500 dark:text-sky-400",
+      bgClass: "bg-sky-50 dark:bg-sky-900/20"
+    },
+    instagram: {
+      icon: Instagram,
+      label: "Instagram",
+      subLabel: "Behind the scenes",
+      colorClass: "text-pink-600 dark:text-pink-400",
+      bgClass: "bg-pink-50 dark:bg-pink-900/20"
+    },
+    website: {
+      icon: Globe,
+      label: "Website",
+      subLabel: "Visit my portfolio",
+      colorClass: "text-emerald-600 dark:text-emerald-400",
+      bgClass: "bg-emerald-50 dark:bg-emerald-900/20"
+    }
+  };
+
+  const socialLinks = user?.socialLinks || {};
+
+  // If no social links provided, fallback to defaults for demo (only if socialLinks is empty)
+  // But for this task, we want clear database rendering. 
+  // Let's rely on what's passed or empty if nothing.
+  // Existing defaults were:
+  // const linkedIn = user?.socialLinks?.linkedin || "https://www.linkedin.com/in/rohit-kumar-114037328/";
+  // const github = user?.socialLinks?.github || "https://github.com/rohitkumar91131";
+
+  // We will prioritize user.socialLinks. If not present, we won't render them to be "classic" and correct.
+  // However, the original code had fallbacks. I should probably keep fallbacks ONLY for the specific hardcoded ones if I want to maintain exact behavior, 
+  // OR just render what is in DB as requested "agar uske database me ho to".
+  // The user said: "agar uske database me ho to" (Record if it is in his database). 
+  // So I will strictly follow DB presence, maybe keeping the hardcoded fallback ONLY if NO user user object at all (demo mode).
 
   const handleCopy = () => {
     navigator.clipboard.writeText(email);
@@ -91,37 +143,33 @@ const Contact = ({ user }) => {
             </div>
           </div>
 
-          <a
-            href={linkedIn}
-            target="_blank"
-            className="contact-item bg-white dark:bg-black p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm hover:border-blue-600 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col items-center text-center gap-4"
-          >
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-full text-blue-700 dark:text-blue-400 group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
-              <Linkedin size={32} />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">
-                LinkedIn <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Let's connect professionally</p>
-            </div>
-          </a>
+          {/* Dynamic Social Links */}
+          {Object.entries(socialConfig).map(([key, config]) => {
+            const link = socialLinks[key];
+            if (!link) return null;
 
-          <a
-            href={github}
-            target="_blank"
-            className="contact-item bg-white dark:bg-black p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm hover:border-gray-900 dark:hover:border-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col items-center text-center gap-4"
-          >
-            <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full text-gray-900 dark:text-white group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300">
-              <Github size={32} />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">
-                GitHub <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Check out my code</p>
-            </div>
-          </a>
+            const Icon = config.icon;
+
+            return (
+              <a
+                key={key}
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="contact-item bg-white dark:bg-black p-6 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col items-center text-center gap-4"
+              >
+                <div className={`p-4 rounded-full ${config.colorClass} ${config.bgClass} group-hover:scale-110 group-hover:rotate-12 transition-transform duration-300`}>
+                  <Icon size={32} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white flex items-center justify-center gap-2">
+                    {config.label} <ArrowUpRight size={16} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{config.subLabel}</p>
+                </div>
+              </a>
+            );
+          })}
 
           <a
             href="/resume.pdf"

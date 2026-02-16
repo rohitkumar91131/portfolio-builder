@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Github, Linkedin, Twitter, Mail, MapPin, Building, Calendar, ExternalLink, ArrowUpRight } from "lucide-react";
+import { Github, Linkedin, Twitter, Mail, MapPin, Building, Calendar, ExternalLink, ArrowUpRight, Instagram, Globe } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -29,13 +29,10 @@ export default function BentoPortfolio({ user }) {
 
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 auto-rows-[200px] gap-4">
 
-                {/* Profile Card - Large */}
-                <div className="bento-item col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-white dark:bg-black rounded-3xl p-8 border border-neutral-200 dark:border-neutral-800 flex flex-col justify-between overflow-hidden relative group">
-                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                    </div>
-                    <div className="space-y-4 z-10">
-                        <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-neutral-100 dark:border-neutral-800">
+                {/* Profile Card */}
+                <div className="bento-item md:col-span-4 md:row-span-4 bg-white dark:bg-zinc-900 rounded-3xl p-8 shadow-sm border border-zinc-200 dark:border-zinc-800 flex flex-col justify-between relative overflow-hidden group">
+                    <div className="relative z-10">
+                        <div className="w-20 h-20 rounded-full overflow-hidden mb-6 border-2 border-zinc-100 dark:border-zinc-800">
                             <Image
                                 src={user.image || "https://github.com/shadcn.png"}
                                 alt={name}
@@ -43,19 +40,22 @@ export default function BentoPortfolio({ user }) {
                                 className="object-cover"
                             />
                         </div>
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight">{name}</h1>
-                            <p className="text-neutral-500 dark:text-neutral-400 mt-2 line-clamp-3">{bio}</p>
-                        </div>
+                        <h1 className="text-4xl font-bold tracking-tight mb-2">{name}</h1>
+                        <p className="text-zinc-500 dark:text-zinc-400 leading-relaxed max-w-sm">
+                            {bio}
+                        </p>
                     </div>
-                    <div className="flex gap-3 z-10">
+                    <div className="absolute top-0 right-0 p-8 opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-20 transition-all duration-500">
+                        {/* Abstract shape or larger avatar could go here */}
+                    </div>
+                    <div className="flex gap-3 z-10 mt-6">
                         <SocialLink href={socialLinks?.github} icon={<Github size={20} />} />
                         <SocialLink href={socialLinks?.linkedin} icon={<Linkedin size={20} />} />
                         <SocialLink href={socialLinks?.twitter} icon={<Twitter size={20} />} />
+                        <SocialLink href={socialLinks?.instagram} icon={<Instagram size={20} />} />
+                        <SocialLink href={socialLinks?.website} icon={<Globe size={20} />} />
                         <SocialLink href={`mailto:${user.email}`} icon={<Mail size={20} />} />
                     </div>
-                    {/* Decorative Background */}
-                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full blur-3xl" />
                 </div>
 
                 {/* Map / Location Card */}
@@ -86,7 +86,7 @@ export default function BentoPortfolio({ user }) {
                     </div>
                 )}
 
-                {/* Project 1 - Featured */}
+                {/* Project 1 - Featured (Large) */}
                 {projects?.[0] && (
                     <div className="bento-item col-span-1 md:col-span-2 lg:col-span-2 row-span-2 bg-neutral-900 dark:bg-white text-white dark:text-black rounded-3xl p-0 border border-neutral-800 dark:border-neutral-200 relative overflow-hidden group">
                         <div className="absolute inset-0 h-full w-full bg-gradient-to-b from-transparent to-black/80 dark:to-white/10 z-10" />
@@ -102,7 +102,7 @@ export default function BentoPortfolio({ user }) {
                         </div>
 
                         {/* Hover Reveal Link */}
-                        <Link href={`/project/${encodeURIComponent(projects[0].title)}`} className="absolute inset-0 z-30" />
+                        <Link href={`/${user.username}/bento/project/${encodeURIComponent(projects[0].title)}`} className="absolute inset-0 z-30" />
                     </div>
                 )}
 
@@ -120,19 +120,32 @@ export default function BentoPortfolio({ user }) {
                     </div>
                 )}
 
-                {/* Project 2 */}
-                {projects?.[1] && (
-                    <div className="bento-item col-span-1 md:col-span-2 bg-white dark:bg-neutral-900 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-800 group hover:border-blue-500 transition-colors relative">
+                {/* Remaining Projects (Dynamic) */}
+                {projects?.slice(1).map((project) => (
+                    <div key={project._id} className="bento-item col-span-1 md:col-span-2 bg-white dark:bg-neutral-900 rounded-3xl p-6 border border-neutral-200 dark:border-neutral-800 group hover:border-blue-500 transition-colors relative">
                         <div className="flex justify-between items-start mb-4">
-                            <div className={`w-10 h-10 rounded-lg ${projects[1].color} flex items-center justify-center`}>
+                            <div className={`w-10 h-10 rounded-lg ${project.color || 'bg-gray-100 dark:bg-gray-800'} flex items-center justify-center`}>
                                 <ArrowUpRight size={20} className="text-current opacity-70" />
                             </div>
                         </div>
-                        <h3 className="font-bold text-lg">{projects[1].title}</h3>
-                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 line-clamp-2">{projects[1].description}</p>
-                        <Link href={`/project/${encodeURIComponent(projects[1].title)}`} className="absolute inset-0 z-10" />
+                        <h3 className="font-bold text-lg">{project.title}</h3>
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 line-clamp-2">{project.description}</p>
+
+                        <div className="flex gap-3 mt-4 relative z-20">
+                            {project.githubLink && (
+                                <a href={project.githubLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-neutral-500 hover:text-blue-600 transition-colors">
+                                    <Github size={18} />
+                                </a>
+                            )}
+                            {project.liveLink && (
+                                <a href={project.liveLink} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-neutral-500 hover:text-blue-600 transition-colors">
+                                    <ExternalLink size={18} />
+                                </a>
+                            )}
+                        </div>
+                        <Link href={`/${user.username}/bento/project/${encodeURIComponent(project.title)}`} className="absolute inset-0 z-10" />
                     </div>
-                )}
+                ))}
 
                 {/* Tech Stack / Skills (Static for now, but could be dynamic) */}
                 <div className="bento-item col-span-1 md:col-span-2 bg-neutral-100 dark:bg-neutral-900 rounded-3xl p-6 flex flex-wrap gap-2 content-start">
@@ -154,7 +167,7 @@ export default function BentoPortfolio({ user }) {
             </div>
 
             <div className="mt-8 text-center text-neutral-400 text-sm">
-                &copy; {new Date().getFullYear()} {name} Portfolio
+                &copy; {new Date().getFullYear()} {user.name} - Let&apos;s build something great.
             </div>
         </div>
     );

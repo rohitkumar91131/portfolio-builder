@@ -2,9 +2,47 @@
 
 import { Trash2, Download, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useState, useEffect } from "react";
+import { toast } from "sonner"; // Assuming sonner is used based on previous files
 
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+    const [exporting, setExporting] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const handleExport = async () => {
+        setExporting(true);
+        try {
+            const res = await fetch("/api/user/profile");
+            const data = await res.json();
+
+            if (data.success && data.user) {
+                const jsonString = JSON.stringify(data.user, null, 2);
+                const blob = new Blob([jsonString], { type: "application/json" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = `portfolio-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success("Data exported successfully");
+            } else {
+                toast.error("Failed to fetch data for export");
+            }
+        } catch (error) {
+            console.error("Export error:", error);
+            toast.error("An error occurred during export");
+        } finally {
+            setExporting(false);
+        }
+    };
+
+    if (!mounted) return null;
 
     return (
         <div className="max-w-2xl mx-auto">
@@ -47,9 +85,13 @@ export default function SettingsPage() {
                                 <h3 className="font-medium text-gray-900 dark:text-white">Export Data</h3>
                                 <p className="text-sm text-gray-500">Download a copy of your portfolio data.</p>
                             </div>
-                            <button className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                            <button
+                                onClick={handleExport}
+                                disabled={exporting}
+                                className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition disabled:opacity-50"
+                            >
                                 <Download size={18} />
-                                Export JSON
+                                {exporting ? "Exporting..." : "Export JSON"}
                             </button>
                         </div>
                     </div>
