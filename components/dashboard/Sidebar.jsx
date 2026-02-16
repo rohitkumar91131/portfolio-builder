@@ -10,11 +10,14 @@ import {
     Settings,
     LayoutTemplate,
     LogOut,
-    Sparkles
+    Sparkles,
+    Home
 } from "lucide-react";
+
 import { signOut } from "next-auth/react";
 
 const navItems = [
+    { name: "Home", href: "/", icon: Home },
     { name: "Profile", href: "/dashboard/profile", icon: User },
     { name: "Experience", href: "/dashboard/experience", icon: Briefcase },
     { name: "Education", href: "/dashboard/education", icon: GraduationCap },
