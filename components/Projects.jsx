@@ -236,7 +236,7 @@ export default function Projects({ projects, username }) { // Accept username pr
           ) : (
             displayProjects.map((project, index) => (
               <div key={project._id || index} className="project-card-wrapper h-full">
-                <ProjectCard project={project} index={index} />
+                <ProjectCard project={project} index={index} username={username} />
               </div>
             ))
           )}

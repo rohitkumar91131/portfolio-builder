@@ -8,9 +8,12 @@ import ClassicPortfolio from "@/components/templates/original/ClassicPortfolio";
 import ModernPortfolio from "@/components/templates/modern/ModernPortfolio";
 import BentoPortfolio from "@/components/templates/bento/BentoPortfolio";
 import MinimalPortfolio from "@/components/templates/minimal/MinimalPortfolio";
-
-
-
+import RetroPortfolio from "@/components/templates/retro/RetroPortfolio";
+import ChaosPortfolio from "@/components/templates/chaos/ChaosPortfolio";
+import CorporatePortfolio from "@/components/templates/corporate/CorporatePortfolio";
+import HorizontalPortfolio from "@/components/templates/horizontal/HorizontalPortfolio";
+import MagazinePortfolio from "@/components/templates/magazine/MagazinePortfolio";
+import ParallaxPortfolio from "@/components/templates/parallax/ParallaxPortfolio";
 
 export async function generateMetadata({ params }) {
     const { username } = await params;
@@ -55,13 +58,25 @@ export default async function PublicPortfolio({ params }) {
     const { template } = user;
 
     // Template Mapping
-    switch (template) {
+    switch (template?.toLowerCase()) {
         case "modern":
             return <ModernPortfolio user={user} />;
         case "bento":
             return <BentoPortfolio user={user} />;
         case "minimal":
             return <MinimalPortfolio user={user} />;
+        case "retro":
+            return <RetroPortfolio user={user} />;
+        case "chaos":
+            return <ChaosPortfolio user={user} />;
+        case "corporate":
+            return <CorporatePortfolio user={user} />;
+        case "horizontal":
+            return <HorizontalPortfolio user={user} />;
+        case "magazine":
+            return <MagazinePortfolio user={user} />;
+        case "parallax":
+            return <ParallaxPortfolio user={user} />;
         case "classic":
         default:
             return <ClassicPortfolio user={user} />;
