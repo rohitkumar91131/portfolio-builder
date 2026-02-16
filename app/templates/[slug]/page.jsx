@@ -29,23 +29,30 @@ export default function DynamicTemplate() {
     const [data, setData] = useState({ projects: [], education: [], experience: [] });
     const [loading, setLoading] = useState(true);
 
-    // Fetch Data Once for All Templates
+    // Fetch Data Once for All Templates (Static User for Demo/Preview)
+    const DEMO_USER = "rk34190100";
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [projRes, eduRes, expRes] = await Promise.all([
-                    fetch("/api/projects"),
-                    fetch("/api/education"),
-                    fetch("/api/experience")
+                // Fetch public data for specific user
+                const [projRes, eduRes, expRes, userRes] = await Promise.all([
+                    fetch(`/api/projects?username=${DEMO_USER}`),
+                    fetch(`/api/education?username=${DEMO_USER}`),
+                    fetch(`/api/experience?username=${DEMO_USER}`),
+                    // We might need user profile too if session is missing
+                    fetch(`/api/user/profile?username=${DEMO_USER}`)
                 ]);
                 const projData = await projRes.json();
                 const eduData = await eduRes.json();
                 const expData = await expRes.json();
+                const userData = await userRes.json();
 
                 setData({
                     projects: projData.success ? projData.data : [],
                     education: eduData.success ? eduData.data : [],
-                    experience: expData.success ? expData.data : []
+                    experience: expData.success ? expData.data : [],
+                    user: userData.success ? userData.data : null
                 });
             } catch (e) {
                 console.error("Failed to fetch data", e);
@@ -56,12 +63,16 @@ export default function DynamicTemplate() {
         fetchData();
     }, []);
 
-    if (loading || !session) return <div className="h-screen flex items-center justify-center">Loading Template...</div>;
+    if (loading) return <div className="h-screen flex items-center justify-center">Loading Template...</div>;
+
+    // Use session user if available, otherwise fall back to fetched public user data
+    const displayUser = session?.user || data.user;
+
+    if (!displayUser) return <div className="h-screen flex items-center justify-center">User not found</div>;
 
     // Construct User Object for Templates
-    // Templates expect: { name, bio, socialLinks, projects, education, experience, ... }
     const user = {
-        ...session.user,
+        ...displayUser,
         projects: data.projects,
         education: data.education,
         experience: data.experience

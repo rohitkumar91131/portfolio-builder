@@ -6,19 +6,33 @@ import User from "@/models/User";
 
 export async function GET(req) {
     try {
+        await connectDB();
+
+        const { searchParams } = new URL(req.url);
+        const username = searchParams.get("username");
+
+        // Public Access
+        if (username) {
+            const user = await User.findOne({ username });
+            if (!user) {
+                return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+            }
+            return NextResponse.json({ success: true, data: user });
+        }
+
+        // Private Access
         const session = await getServerSession(authOptions);
         if (!session) {
             return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
         }
 
-        await connectDB();
         const user = await User.findOne({ email: session.user.email });
 
         if (!user) {
             return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
         }
 
-        return NextResponse.json({ success: true, user });
+        return NextResponse.json({ success: true, data: user });
     } catch (error) {
         console.error("Profile Fetch Error:", error);
         return NextResponse.json({ success: false, error: "Server Error" }, { status: 500 });

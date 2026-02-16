@@ -7,12 +7,27 @@ import User from "@/models/User";
 
 export async function GET(req) {
   try {
+    await connectDB();
+
+    const { searchParams } = new URL(req.url);
+    const username = searchParams.get("username");
+
+    // Public Access
+    if (username) {
+      const targetUser = await User.findOne({ username });
+      if (!targetUser) {
+        return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+      }
+      const education = await Education.find({ user: targetUser._id }).sort({ startYear: -1 });
+      return NextResponse.json({ success: true, data: education });
+    }
+
+    // Private Access
     const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectDB();
     const education = await Education.find({ user: session.user.id }).sort({ startYear: -1 });
 
     return NextResponse.json({ success: true, data: education });
