@@ -14,9 +14,8 @@ export default function Footer() {
         </p>
 
         <div className="flex gap-6 text-sm text-gray-500">
-          <a href="#" className="hover:text-blue-600 transition">Twitter</a>
-          <a href="#" className="hover:text-blue-600 transition">GitHub</a>
-          <a href="#" className="hover:text-blue-600 transition">Discord</a>
+          <a href="https://github.com/rohitkumar91131/portfolio-builder" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition">GitHub</a>
+          <a href="/privacy" className="hover:text-blue-600 transition">Privacy Policy</a>
         </div>
 
         <div className="text-xs text-gray-400 mt-8">
