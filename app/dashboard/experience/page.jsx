@@ -9,6 +9,7 @@ export default function ExperiencePage() {
     const [experiences, setExperiences] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
         company: "",
         position: "",
@@ -45,23 +46,46 @@ export default function ExperiencePage() {
         }));
     };
 
+    const formatDateForInput = (dateString) => {
+        if (!dateString) return "";
+        return new Date(dateString).toISOString().split('T')[0];
+    };
+
+    const handleEdit = (exp) => {
+        setEditingId(exp._id);
+        setFormData({
+            company: exp.company,
+            position: exp.position,
+            description: exp.description || "",
+            startDate: formatDateForInput(exp.startDate),
+            endDate: exp.endDate ? formatDateForInput(exp.endDate) : "",
+            current: exp.current || false,
+            location: exp.location || ""
+        });
+        setShowForm(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Validate required fields
         if (!formData.company || !formData.position || !formData.startDate) {
             toast.error("Please fill in required fields");
             return;
         }
 
         try {
-            const res = await fetch("/api/experience", {
-                method: "POST",
+            const url = editingId ? `/api/experience/${editingId}` : "/api/experience";
+            const method = editingId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method: method,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             if (res.ok) {
                 setShowForm(false);
+                setEditingId(null);
                 setFormData({
                     company: "",
                     position: "",
@@ -72,7 +96,10 @@ export default function ExperiencePage() {
                     location: ""
                 });
                 fetchExperiences();
-                toast.success("Experience added successfully!");
+                toast.success(editingId ? "Experience updated successfully!" : "Experience added successfully!");
+            } else {
+                const data = await res.json();
+                toast.error(data.error || "Failed to save experience");
             }
         } catch (error) {
             console.error("Error saving experience", error);
@@ -81,16 +108,38 @@ export default function ExperiencePage() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm("Are you sure?")) return;
+        if (!confirm("Are you sure you want to delete this experience?")) return;
         try {
-            // Note: Needs DELETE endpoint implementation
-            toast.info("Delete functionality to be implemented in API");
-            // const res = await fetch(`/api/experience/${id}`, { method: "DELETE" });
-            // if(res.ok) fetchExperiences();
+            const res = await fetch(`/api/experience/${id}`, { method: "DELETE" });
+            if (res.ok) {
+                setExperiences(experiences.filter(exp => exp._id !== id));
+                toast.success("Experience deleted successfully");
+            } else {
+                toast.error("Failed to delete experience");
+            }
         } catch (error) {
             console.error(error);
+            toast.error("Error deleting experience");
         }
-    }
+    };
+
+    const toggleForm = () => {
+        if (showForm) {
+            setShowForm(false);
+            setEditingId(null);
+            setFormData({
+                company: "",
+                position: "",
+                description: "",
+                startDate: "",
+                endDate: "",
+                current: false,
+                location: ""
+            });
+        } else {
+            setShowForm(true);
+        }
+    };
 
     if (loading) return <ListSkeleton />;
 
@@ -102,8 +151,8 @@ export default function ExperiencePage() {
                     <p className="text-gray-500 dark:text-gray-400 mt-2">Add your professional work history.</p>
                 </div>
                 <button
-                    onClick={() => setShowForm(!showForm)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    onClick={toggleForm}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${showForm ? "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-200" : "bg-blue-600 text-white hover:bg-blue-700"}`}
                 >
                     {showForm ? "Cancel" : <><Plus size={20} /> Add Experience</>}
                 </button>
@@ -111,6 +160,7 @@ export default function ExperiencePage() {
 
             {showForm && (
                 <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8 animate-in fade-in slide-in-from-top-4">
+                    <h2 className="text-xl font-bold mb-4 dark:text-white">{editingId ? "Edit Experience" : "Add New Experience"}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium mb-1 dark:text-gray-300">Company *</label>
@@ -137,15 +187,16 @@ export default function ExperiencePage() {
                             <textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="w-full px-4 py-2 rounded-lg border dark:bg-gray-800 dark:border-gray-700" />
                         </div>
                     </div>
-                    <div className="mt-4 flex justify-end">
-                        <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Experience</button>
+                    <div className="mt-4 flex justify-end gap-3">
+                        <button type="button" onClick={toggleForm} className="px-6 py-2 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition">Cancel</button>
+                        <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">{editingId ? "Update Experience" : "Save Experience"}</button>
                     </div>
                 </form>
             )}
 
             <div className="space-y-4">
                 {experiences.map((exp) => (
-                    <div key={exp._id} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex justify-between items-start group">
+                    <div key={exp._id} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex justify-between items-start group hover:border-blue-500/50 transition-colors">
                         <div className="flex gap-4">
                             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl h-fit">
                                 <Briefcase className="text-blue-600 dark:text-blue-400" size={24} />
@@ -160,10 +211,18 @@ export default function ExperiencePage() {
                                 <p className="mt-2 text-gray-600 dark:text-gray-400">{exp.description}</p>
                             </div>
                         </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                                onClick={() => handleEdit(exp)}
+                                className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+                                title="Edit"
+                            >
+                                <Edit2 size={18} />
+                            </button>
                             <button
                                 onClick={() => handleDelete(exp._id)}
                                 className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                                title="Delete"
                             >
                                 <Trash2 size={18} />
                             </button>

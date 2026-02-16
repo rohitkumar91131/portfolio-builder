@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Loader2, FolderGit2, Link as LinkIcon, Github } from "lucide-react";
+import { Plus, Trash2, Edit2, Loader2, FolderGit2, Link as LinkIcon, Github } from "lucide-react";
 import { ListSkeleton } from "@/components/dashboard/Skeletons";
 import { toast } from "sonner";
 
@@ -9,6 +9,7 @@ export default function ProjectsPage() {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
+    const [editingId, setEditingId] = useState(null);
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -40,6 +41,19 @@ export default function ProjectsPage() {
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleEdit = (project) => {
+        setEditingId(project._id);
+        setFormData({
+            title: project.title,
+            description: project.description,
+            tech: project.tech.join(", "),
+            liveLink: project.liveLink || "",
+            githubLink: project.githubLink || "",
+        });
+        setShowForm(true);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.title || !formData.description) {
@@ -47,16 +61,25 @@ export default function ProjectsPage() {
             return;
         }
 
+        // Process tech string into array
+        const processedData = {
+            ...formData,
+            tech: formData.tech.split(",").map(t => t.trim()).filter(t => t !== "")
+        };
+
         try {
-            const res = await fetch("/api/projects", {
-                method: "POST",
+            const url = editingId ? `/api/projects/${editingId}` : "/api/projects";
+            const method = editingId ? "PUT" : "POST";
+
+            const res = await fetch(url, {
+                method: method,
                 headers: { "Content-Type": "application/json" },
-                // Tech needs to be processed on backend or here, sending string for now
-                body: JSON.stringify(formData),
+                body: JSON.stringify(processedData),
             });
 
             if (res.ok) {
                 setShowForm(false);
+                setEditingId(null);
                 setFormData({
                     title: "",
                     description: "",
@@ -65,7 +88,10 @@ export default function ProjectsPage() {
                     githubLink: "",
                 });
                 fetchProjects();
-                toast.success("Project added successfully!");
+                toast.success(editingId ? "Project updated successfully!" : "Project added successfully!");
+            } else {
+                const data = await res.json();
+                toast.error(data.error || "Failed to save project");
             }
         } catch (error) {
             console.error("Error saving project", error);
@@ -74,8 +100,39 @@ export default function ProjectsPage() {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm("Are you sure?")) return;
-        toast.info("Delete functionality to be implemented in API");
+        if (!confirm("Are you sure you want to delete this project?")) return;
+
+        try {
+            const res = await fetch(`/api/projects/${id}`, {
+                method: "DELETE",
+            });
+
+            if (res.ok) {
+                setProjects(projects.filter(p => p._id !== id));
+                toast.success("Project deleted successfully");
+            } else {
+                toast.error("Failed to delete project");
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Error deleting project");
+        }
+    };
+
+    const toggleForm = () => {
+        if (showForm) {
+            setShowForm(false);
+            setEditingId(null);
+            setFormData({
+                title: "",
+                description: "",
+                tech: "",
+                liveLink: "",
+                githubLink: "",
+            });
+        } else {
+            setShowForm(true);
+        }
     };
 
     if (loading) return <ListSkeleton />;
@@ -88,8 +145,8 @@ export default function ProjectsPage() {
                     <p className="text-gray-500 dark:text-gray-400 mt-2">Showcase your best work.</p>
                 </div>
                 <button
-                    onClick={() => setShowForm(!showForm)}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    onClick={toggleForm}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${showForm ? "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-200" : "bg-blue-600 text-white hover:bg-blue-700"}`}
                 >
                     {showForm ? "Cancel" : <><Plus size={20} /> Add Project</>}
                 </button>
@@ -97,6 +154,7 @@ export default function ProjectsPage() {
 
             {showForm && (
                 <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm mb-8 animate-in fade-in slide-in-from-top-4">
+                    <h2 className="text-xl font-bold mb-4 dark:text-white">{editingId ? "Edit Project" : "Add New Project"}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium mb-1 dark:text-gray-300">Project Title *</label>
@@ -119,23 +177,32 @@ export default function ProjectsPage() {
                             <input type="url" name="githubLink" value={formData.githubLink} onChange={handleChange} className="w-full px-4 py-2 rounded-lg border dark:bg-gray-800 dark:border-gray-700" placeholder="https://github.com/..." />
                         </div>
                     </div>
-                    <div className="mt-4 flex justify-end">
-                        <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Save Project</button>
+                    <div className="mt-6 flex justify-end gap-3">
+                        <button type="button" onClick={toggleForm} className="px-6 py-2 border border-gray-200 dark:border-gray-800 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition">Cancel</button>
+                        <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">{editingId ? "Update Project" : "Save Project"}</button>
                     </div>
                 </form>
             )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {projects.map((project) => (
-                    <div key={project._id} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm group flex flex-col h-full">
+                    <div key={project._id} className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm group flex flex-col h-full hover:border-blue-500/50 transition-colors">
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                                 <FolderGit2 className="text-blue-600 dark:text-blue-400" size={24} />
                             </div>
-                            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button
+                                    onClick={() => handleEdit(project)}
+                                    className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
+                                    title="Edit"
+                                >
+                                    <Edit2 size={18} />
+                                </button>
                                 <button
                                     onClick={() => handleDelete(project._id)}
                                     className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition"
+                                    title="Delete"
                                 >
                                     <Trash2 size={18} />
                                 </button>
