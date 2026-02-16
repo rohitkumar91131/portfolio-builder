@@ -1,9 +1,10 @@
 "use client";
 
-import { Trash2, Download, Moon, Sun } from "lucide-react";
+import { Download, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
-import { toast } from "sonner"; // Assuming sonner is used based on previous files
+import { toast } from "sonner";
+import DeleteAccount from "@/components/dashboard/settings/DeleteAccount";
 
 export default function SettingsPage() {
     const { theme, setTheme } = useTheme();
@@ -98,20 +99,7 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Danger Zone */}
-                <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-red-100 dark:border-red-900/20 shadow-sm">
-                    <h2 className="text-lg font-semibold text-red-600 mb-4">Danger Zone</h2>
-
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="font-medium text-gray-900 dark:text-white">Delete Account</h3>
-                            <p className="text-sm text-gray-500">Permanently remove your account and all data.</p>
-                        </div>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-100 rounded-lg hover:bg-red-100 transition">
-                            <Trash2 size={18} />
-                            Delete Account
-                        </button>
-                    </div>
-                </div>
+                <DeleteAccount />
 
             </div>
         </div>
