@@ -88,57 +88,60 @@ export default function Navbar() {
   ];
 
   return (
-    <nav
-      ref={navRef}
-      className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/70 dark:bg-black/70 border-b border-gray-200 dark:border-gray-800"
-    >
-      <div className="flex items-center gap-2">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-            P
-          </div>
-          <span className="text-xl font-bold tracking-tight flex items-center gap-1">
-            Portfolio
-            <Sparkles ref={sparkleRef} className="w-4 h-4 text-yellow-500" />
-          </span>
-        </Link>
-      </div>
-
-      {/* Desktop Links */}
-      <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-400">
-        {navLinks.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            {link.name}
+    <>
+      <nav
+        ref={navRef}
+        className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 backdrop-blur-md bg-white/70 dark:bg-black/70 border-b border-gray-200 dark:border-gray-800"
+      >
+        <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+              P
+            </div>
+            <span className="text-xl font-bold tracking-tight flex items-center gap-1">
+              Portfolio
+              <Sparkles ref={sparkleRef} className="w-4 h-4 text-yellow-500" />
+            </span>
           </Link>
-        ))}
-      </div>
-
-      <div className="flex items-center gap-4">
-        <ThemeToggle />
-        <div className="hidden md:block">
-          <AuthButtons />
         </div>
 
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 text-gray-600 dark:text-gray-400"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </div>
+        {/* Desktop Links */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600 dark:text-gray-400">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {link.name}
+            </Link>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <div className="hidden md:block">
+            <AuthButtons />
+          </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2 text-gray-600 dark:text-gray-400"
+            onClick={toggleMenu}
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </nav>
 
       {/* Mobile Menu Overlay */}
       <div
         ref={menuRef}
-        className="fixed inset-0 top-[65px] bg-white/90 dark:bg-black/90 backdrop-blur-xl z-40 md:hidden -translate-y-[120%] border-b border-gray-200 dark:border-gray-800"
+        className="fixed inset-0 min-h-screen bg-white/90 dark:bg-black/90 backdrop-blur-xl z-40 md:hidden flex flex-col pt-24 px-6 border-b border-gray-200 dark:border-gray-800"
+        style={{ transform: "translateY(-100%)" }}
       >
-        <div className="flex flex-col p-8 gap-6">
+        <div className="flex flex-col gap-6">
           {navLinks.map((link, index) => (
             <Link
               key={link.name}
@@ -154,10 +157,12 @@ export default function Navbar() {
             ref={(el) => (linksRef.current[navLinks.length] = el)}
             className="pt-4 border-t border-gray-100 dark:border-gray-900"
           >
-            <AuthButtons />
+            <div onClick={() => setIsOpen(false)}>
+              <AuthButtons />
+            </div>
           </div>
         </div>
       </div>
-    </nav>
+    </>
   );
 }
