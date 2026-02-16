@@ -4,13 +4,14 @@ import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sparkles } from "lucide-react";
 import ThemeToggle from "../ThemeToggle";
 import AuthButtons from "../auth/AuthButtons";
 
 export default function Navbar() {
   const navRef = useRef(null);
   const menuRef = useRef(null);
+  const sparkleRef = useRef(null);
   const linksRef = useRef([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -21,6 +22,21 @@ export default function Navbar() {
       duration: 1,
       ease: "power4.out",
       delay: 0.2,
+    });
+
+    gsap.to(sparkleRef.current, {
+      rotation: 360,
+      repeat: -1,
+      duration: 5,
+      ease: "linear",
+    });
+
+    gsap.to(sparkleRef.current, {
+      scale: 1.2,
+      yoyo: true,
+      repeat: -1,
+      duration: 1.5,
+      ease: "power1.inOut",
     });
   }, { scope: navRef });
 
@@ -81,7 +97,10 @@ export default function Navbar() {
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
             P
           </div>
-          <span className="text-xl font-bold tracking-tight">Portfolio</span>
+          <span className="text-xl font-bold tracking-tight flex items-center gap-1">
+            Portfolio
+            <Sparkles ref={sparkleRef} className="w-4 h-4 text-yellow-500" />
+          </span>
         </Link>
       </div>
 

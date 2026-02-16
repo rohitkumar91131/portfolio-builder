@@ -37,7 +37,11 @@ const templates = [
     { id: "horizontal", name: "Horizontal", desc: "Sideways scrolling journey.", color: "bg-red-500" },
 ];
 
-export default function TemplateGallery() {
+export const metadata = {
+    title: "Templates",
+};
+
+export default function TemplatesPage() {
     return (
         <main className="min-h-screen bg-gray-50 dark:bg-black p-8">
             <div className="max-w-6xl mx-auto">

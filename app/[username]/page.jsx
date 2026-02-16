@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
 
     if (!user) {
         return {
-            title: "User Not Found",
+            title: "User Not Found | Portfolio",
         };
     }
 
