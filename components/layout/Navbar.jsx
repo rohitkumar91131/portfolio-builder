@@ -43,15 +43,15 @@ export default function Navbar() {
   useGSAP(() => {
     if (isOpen) {
       gsap.to(menuRef.current, {
-        x: 0,
+        y: 0,
         duration: 0.6,
         ease: "power4.out",
       });
       gsap.fromTo(
         linksRef.current,
-        { x: 50, opacity: 0 },
+        { y: -20, opacity: 0 },
         {
-          x: 0,
+          y: 0,
           opacity: 1,
           duration: 0.4,
           stagger: 0.1,
@@ -61,7 +61,7 @@ export default function Navbar() {
       );
     } else {
       gsap.to(menuRef.current, {
-        x: "100%",
+        y: "-100%",
         duration: 0.6,
         ease: "power4.in",
       });
@@ -136,7 +136,7 @@ export default function Navbar() {
       {/* Mobile Menu Overlay */}
       <div
         ref={menuRef}
-        className="fixed inset-0 top-[65px] bg-white dark:bg-black z-40 md:hidden translate-x-full border-l border-gray-200 dark:border-gray-800"
+        className="fixed inset-0 top-[65px] bg-white/90 dark:bg-black/90 backdrop-blur-xl z-40 md:hidden -translate-y-[120%] border-b border-gray-200 dark:border-gray-800"
       >
         <div className="flex flex-col p-8 gap-6">
           {navLinks.map((link, index) => (
