@@ -78,8 +78,8 @@ export default function ProfilePage() {
                 const res = await fetch("/api/user/profile");
                 const data = await res.json();
 
-                if (data.success && data.user) {
-                    const dbUser = data.user;
+                if (data.success && data.data) {
+                    const dbUser = data.data;
                     setFormData({
                         name: dbUser.name || "",
                         username: dbUser.username || "",

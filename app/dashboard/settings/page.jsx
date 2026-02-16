@@ -21,8 +21,8 @@ export default function SettingsPage() {
             const res = await fetch("/api/user/profile");
             const data = await res.json();
 
-            if (data.success && data.user) {
-                const jsonString = JSON.stringify(data.user, null, 2);
+            if (data.success && data.data) {
+                const jsonString = JSON.stringify(data.data, null, 2);
                 const blob = new Blob([jsonString], { type: "application/json" });
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement("a");
