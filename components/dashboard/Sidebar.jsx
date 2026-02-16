@@ -9,7 +9,8 @@ import {
     FolderGit2,
     Settings,
     LayoutTemplate,
-    LogOut
+    LogOut,
+    Sparkles
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 
@@ -62,7 +63,15 @@ export default function Sidebar({ isOpen, onClose, user, isLoading }) {
                                 target="_blank"
                                 className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
                             >
-                                <span>View Portfolio</span>
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6 bg-white/20 rounded flex items-center justify-center text-white font-bold text-sm">
+                                        P
+                                    </div>
+                                    <span className="font-bold flex items-center gap-1">
+                                        View Portfolio
+                                        <Sparkles className="w-3 h-3 text-yellow-300" />
+                                    </span>
+                                </div>
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                                 </svg>
