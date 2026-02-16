@@ -211,7 +211,7 @@ export default function ExperiencePage() {
                                 <p className="mt-2 text-gray-600 dark:text-gray-400">{exp.description}</p>
                             </div>
                         </div>
-                        <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                             <button
                                 onClick={() => handleEdit(exp)}
                                 className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"

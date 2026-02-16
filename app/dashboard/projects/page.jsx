@@ -191,7 +191,7 @@ export default function ProjectsPage() {
                             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
                                 <FolderGit2 className="text-blue-600 dark:text-blue-400" size={24} />
                             </div>
-                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="flex gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => handleEdit(project)}
                                     className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
